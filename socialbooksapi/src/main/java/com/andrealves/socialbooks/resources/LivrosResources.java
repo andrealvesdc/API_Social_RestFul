@@ -1,7 +1,6 @@
 package com.andrealves.socialbooks.resources;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,5 +32,16 @@ public class LivrosResources {
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public Object buscar(@PathVariable("id") Long id) {
 		return livrosRepository.findById(id);
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
+	public void delete(@PathVariable("id") Long id) {
+		livrosRepository.deleteById(id);
+	}
+	
+	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
+	public void atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
+		livro.setId(id);
+		livrosRepository.save(livro);
 	}
 }
