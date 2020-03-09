@@ -15,23 +15,24 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import com.andrealves.socialbooks.domain.Livro;
-import com.andrealves.socialbooks.repository.LivrosRepository;
+import com.andrealves.socialbooks.services.LivrosService;
+import com.andrealves.socialbooks.services.exception.LivroNaoEncontraddoException;
 
 @RestController
 @RequestMapping("/livros")
 public class LivrosResources {
 	
 	@Autowired
-	private LivrosRepository livrosRepository;
+	private LivrosService livrosService;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public ResponseEntity<List<Livro>> listar() {
-		return ResponseEntity.status(HttpStatus.OK).body(livrosRepository.findAll());
+		return ResponseEntity.status(HttpStatus.OK).body(livrosService.listar());
 	}
 	
 	@RequestMapping(method = RequestMethod.POST)
 	public ResponseEntity<Void> salvar(@RequestBody Livro livro){
-		livrosRepository.save(livro);
+		livrosService.salvar(livro);
 		
 		URI uri = ServletUriComponentsBuilder.fromCurrentRequest()
 				.path("/{id}").buildAndExpand(livro.getId()).toUri();
@@ -40,10 +41,12 @@ public class LivrosResources {
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
-	public ResponseEntity<Object> buscar(@PathVariable("id") Long id) {
-		Object livro = livrosRepository.findById(id);
+	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
+		Livro livro = null;
 		
-		if (livro == null) {
+		try {
+			livro = (Livro) livrosService.buscar(id);
+		} catch (LivroNaoEncontraddoException e) {
 			return ResponseEntity.notFound().build();
 		}
 		return ResponseEntity.status(HttpStatus.OK).body(livro);
@@ -53,7 +56,7 @@ public class LivrosResources {
 	public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
 		
 		try {
-			livrosRepository.deleteById(id);
+			livrosService.deletar(id);
 		} catch (EmptyResultDataAccessException e) {
 			return ResponseEntity.notFound().build();
 		}
@@ -63,7 +66,12 @@ public class LivrosResources {
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
 		livro.setId(id);
-		livrosRepository.save(livro);
+		
+		try {
+			livrosService.atualizar(livro);
+		} catch (LivroNaoEncontraddoException e) {
+			return ResponseEntity.notFound().build();
+		}
 		
 		return ResponseEntity.noContent().build();
 	}
