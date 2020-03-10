@@ -1,5 +1,6 @@
 package com.andrealves.socialbooks.services;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -7,7 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.stereotype.Service;
 
+import com.andrealves.socialbooks.domain.Comentarios;
 import com.andrealves.socialbooks.domain.Livro;
+import com.andrealves.socialbooks.repository.ComentarioRepository;
 import com.andrealves.socialbooks.repository.LivrosRepository;
 import com.andrealves.socialbooks.services.exception.LivroNaoEncontraddoException;
 
@@ -16,6 +19,9 @@ public class LivrosService {
 	
 	@Autowired
 	private LivrosRepository livrosRepository;
+	
+	@Autowired
+	private ComentarioRepository comentariosRepository;
 	
 	public List<Livro> listar(){
 		return livrosRepository.findAll();
@@ -53,6 +59,14 @@ public class LivrosService {
 	
 	private void verificarExistencia(Livro livro) {
 		buscar(livro.getId());
+	}
+	
+	public Comentarios salvarComentario(Long livroId, Comentarios comentario) {
+		Livro livro = (Livro) buscar(livroId);
+		
+		comentario.setLivro(livro);
+		comentario.setData(new Date());
+		return comentariosRepository.save(comentario);
 	}
 
 }
