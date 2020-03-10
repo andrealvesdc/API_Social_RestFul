@@ -42,36 +42,20 @@ public class LivrosResources {
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.GET)
 	public ResponseEntity<?> buscar(@PathVariable("id") Long id) {
-		Livro livro = null;
-		
-		try {
-			livro = (Livro) livrosService.buscar(id);
-		} catch (LivroNaoEncontraddoException e) {
-			return ResponseEntity.notFound().build();
-		}
+		Object livro = livrosService.buscar(id);
 		return ResponseEntity.status(HttpStatus.OK).body(livro);
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.DELETE)
 	public ResponseEntity<Void> delete(@PathVariable("id") Long id) {
-		
-		try {
-			livrosService.deletar(id);
-		} catch (EmptyResultDataAccessException e) {
-			return ResponseEntity.notFound().build();
-		}
+		livrosService.deletar(id);
 		return ResponseEntity.noContent().build();
 	}
 	
 	@RequestMapping(value = "/{id}", method = RequestMethod.PUT)
 	public ResponseEntity<Void> atualizar(@RequestBody Livro livro, @PathVariable("id") Long id) {
 		livro.setId(id);
-		
-		try {
-			livrosService.atualizar(livro);
-		} catch (LivroNaoEncontraddoException e) {
-			return ResponseEntity.notFound().build();
-		}
+		livrosService.atualizar(livro);
 		
 		return ResponseEntity.noContent().build();
 	}
