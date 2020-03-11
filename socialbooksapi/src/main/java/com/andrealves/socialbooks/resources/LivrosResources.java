@@ -68,4 +68,10 @@ public class LivrosResources {
 		
 		return ResponseEntity.created(uri).build();
 	}
+	
+	public ResponseEntity<List<Comentarios>> listarComentarios (@PathVariable ("id") Long livroId){
+		List<Comentarios> comentarios = livrosService.listar(livroId);
+		
+		return ResponseEntity.status(HttpStatus.OK).body(comentarios);
+	}
 }
