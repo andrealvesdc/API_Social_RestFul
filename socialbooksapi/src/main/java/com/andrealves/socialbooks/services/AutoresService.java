@@ -1,6 +1,7 @@
 package com.andrealves.socialbooks.services;
 
 import java.util.List;
+import java.util.Optional;
 
 import javax.security.sasl.AuthenticationException;
 
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 import com.andrealves.socialbooks.domain.Autor;
 import com.andrealves.socialbooks.repository.AutoresRepository;
+import com.andrealves.socialbooks.services.exception.AutorNaoEncontradoException;
 
 public class AutoresService {
 	
@@ -29,6 +31,15 @@ public class AutoresService {
 
 		}
 		return autoresRepository.save(autor);
+	}
+	
+	public Optional<Autor> buscar (Long id) {
+		Optional<Autor> autor = autoresRepository.findById(id);
+		
+		if(autor == null) {
+			throw new AutorNaoEncontradoException("O autor não pode ser encontrado");
+		}
+		return autor;
 	}
 
 }
